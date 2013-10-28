@@ -15,15 +15,15 @@
 		#endif
 	#endif
 
-	typedef struct sha256_context
+	typedef struct sha256_32byte_context
 	{
 		uint32 state[8];
 	}
-	sha256_context;
+	sha256_32byte_context;
 
-	void sha256_starts(sha256_context *ctx);
-	void sha256_update(sha256_context *ctx, uint8 *input);
-	void sha256_finish(sha256_context *ctx, uint8 digest[32]);
+	void sha256_32byte_starts(sha256_32byte_context *ctx);
+	void sha256_32byte_update(sha256_32byte_context *ctx, uint8 *input);
+	void sha256_32byte_finish(sha256_32byte_context *ctx, uint8 digest[32]);
 	void sha256_32byte(uint8* str, uint8 output[32]);
 
 #endif /* sha2.h */

@@ -50,7 +50,7 @@ D += temp1; \
 H = temp1 + temp2; \
 }
 
-void sha256_starts(sha256_context *ctx)
+void sha256_32byte_starts(sha256_32byte_context *ctx)
 {
     ctx->state[0] = 0x6A09E667;
     ctx->state[1] = 0xBB67AE85;
@@ -62,9 +62,9 @@ void sha256_starts(sha256_context *ctx)
     ctx->state[7] = 0x5BE0CD19;
 }
 
-void sha256_process(sha256_context *ctx, uint8 data[64])
+void sha256_32byte_process(sha256_32byte_context *ctx, uint8 data[64])
 {
-    uint32 temp1, temp2, W[64];
+    uint32 temp1, W[64];
     uint32 A, B, C, D, E, F, G, H;
 
 	W[0] = (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | (data[3]);
@@ -218,7 +218,7 @@ void sha256_process(sha256_context *ctx, uint8 data[64])
     ctx->state[7] += H;
 }
 
-void sha256_process_in_finish(sha256_context *ctx, uint8 data[64])
+void sha256_32byte_process_in_finish(sha256_32byte_context *ctx, uint8 data[64])
 {
     uint32 temp1;
     uint32 A, B, C, D, E, F, G, H;
@@ -231,7 +231,7 @@ void sha256_process_in_finish(sha256_context *ctx, uint8 data[64])
     F = ctx->state[5];
     G = ctx->state[6];
     H = ctx->state[7];
-
+	
 	temp1 = H + (((E >> 6) | (E << 26)) ^ ((E >> 11) | (E << 21)) ^ ((E >> 25) | (E << 7))) + (G ^ (E & (F ^ G))) + 0xC28A2F98;
 	D += temp1;
 	H = temp1 + (((A >> 2) | (A << 30)) ^ ((A >> 13) | (A << 19)) ^ ((A >> 22) | (A << 10))) + ((A & B) | (C & (A | B)));
@@ -499,7 +499,7 @@ void sha256_process_in_finish(sha256_context *ctx, uint8 data[64])
     ctx->state[7] += H;
 }
 
-static uint8 sha256_padding[64] =
+static uint8 sha256_32byte_padding[64] =
 {
  0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -507,9 +507,9 @@ static uint8 sha256_padding[64] =
     0, 0, 0, 0, 0, 0, 0, 0,	0, 0, 0, 0, 0, 0, 2, 0
 };
 
-void sha256_finish(sha256_context *ctx, uint8 digest[32])
+void sha256_finish(sha256_32byte_context *ctx, uint8 digest[32])
 {
-    sha256_process_in_finish(ctx, sha256_padding);
+    sha256_32byte_process_in_finish(ctx, sha256_32byte_padding);
 
     PUT_UINT32(ctx->state[0], digest, 0);
     PUT_UINT32(ctx->state[1], digest, 4);
@@ -523,8 +523,8 @@ void sha256_finish(sha256_context *ctx, uint8 digest[32])
 
 void sha256_32byte(uint8* input, uint8 output[32])
 {
-	sha256_context ctx;
-	sha256_starts(&ctx);
-	sha256_process(&ctx, input);
+	sha256_32byte_context ctx;
+	sha256_32byte_starts(&ctx);
+	sha256_32byte_process(&ctx, input);
 	sha256_finish(&ctx, output);
 }
